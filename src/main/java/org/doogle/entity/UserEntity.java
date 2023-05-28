@@ -7,7 +7,7 @@ import io.smallrye.mutiny.Uni;
 import lombok.*;
 import org.bson.types.ObjectId;
 
-import javax.persistence.Id;
+import jakarta.persistence.Id;
 
 @EqualsAndHashCode(callSuper = true)
 @MongoEntity(collection = "oreilly_user")

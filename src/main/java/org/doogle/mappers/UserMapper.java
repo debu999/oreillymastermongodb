@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.doogle.entity.UserEntity;
 import org.doogle.model.User;
-import org.eclipse.microprofile.graphql.Name;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,7 +12,7 @@ import org.mapstruct.Named;
 
 import java.util.List;
 
-@Mapper(componentModel = "cdi")
+@Mapper(componentModel = "jakarta")
 public abstract class UserMapper {
     @Mapping(target = "id", expression = "java(fromObjectId(source.id))")
     @Named("fromEntity")

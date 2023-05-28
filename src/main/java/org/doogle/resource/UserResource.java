@@ -2,6 +2,8 @@ package org.doogle.resource;
 
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.doogle.entity.UserEntity;
 import org.doogle.mappers.UserMapper;
 import org.doogle.model.User;
@@ -10,8 +12,6 @@ import org.eclipse.microprofile.graphql.Mutation;
 import org.eclipse.microprofile.graphql.Name;
 import org.eclipse.microprofile.graphql.Query;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import java.util.List;
 
 @GraphQLApi
