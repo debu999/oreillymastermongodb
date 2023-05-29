@@ -23,6 +23,7 @@ public class UserEntity extends ReactivePanacheMongoEntityBase {
     public String name;
     public boolean active;
     public int age;
+    public String race;
 
     public static Uni<UserEntity> persistOrUpdateUser(UserEntity user)
     {

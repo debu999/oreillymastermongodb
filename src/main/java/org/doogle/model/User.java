@@ -13,4 +13,5 @@ public class User {
     private String name;
     private boolean active;
     private int age;
+    private String race;
 }
