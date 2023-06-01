@@ -25,14 +25,14 @@ public class UserResource {
     public Uni<List<User>> getAllUsers() {
 
         Uni<List<UserEntity>> userEntityUni = UserEntity.listAll();
-        return userEntityUni.log().map(u -> userMapper.fromEntities(u)).log();
+        return userEntityUni.log().map(u -> userMapper.fromUserEntities(u)).log();
     }
 
     @Mutation("addUser")
     public Uni<User> addUser(@Name("user") User user) {
 
-        UserEntity u = userMapper.toEntity(user);
+        UserEntity u = userMapper.toUserEntity(user);
         Log.info(u);
-        return Uni.createFrom().item(u).flatMap(UserEntity::persistOrUpdateUser).log("Response").map(obj -> userMapper.fromEntity(obj)).log();
+        return Uni.createFrom().item(u).flatMap(UserEntity::persistOrUpdateUser).log("Response").map(obj -> userMapper.fromUserEntity(obj)).log();
     }
 }

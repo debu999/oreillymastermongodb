@@ -14,25 +14,17 @@ import java.util.List;
 
 @Mapper(componentModel = "jakarta")
 public abstract class UserMapper {
-    @Mapping(target = "id", expression = "java(fromObjectId(source.id))")
-    @Named("fromEntity")
-    public abstract User fromEntity(UserEntity source);
+    @ToModel
+    @Named("fromUserEntity")
+    public abstract User fromUserEntity(UserEntity source);
 
-    @Mapping(target = "id", expression = "java(toObjectId(source.getId()))")
-    @Named("toEntity")
-    public abstract UserEntity toEntity(User source);
+    @ToEntity
+    @Named("toUserEntity")
+    public abstract UserEntity toUserEntity(User source);
 
-    @IterableMapping(qualifiedByName = "fromEntity")
-    public abstract List<User> fromEntities(List<UserEntity> source);
+    @IterableMapping(qualifiedByName = "fromUserEntity")
+    public abstract List<User> fromUserEntities(List<UserEntity> source);
 
-    @IterableMapping(qualifiedByName = "toEntity")
-    public abstract List<UserEntity> toEntities(List<User> source);
-
-    public ObjectId toObjectId(String objectId) {
-        return StringUtils.isNotBlank(objectId) ? new ObjectId(objectId) : null;
-    }
-
-    public String fromObjectId(ObjectId objectId) {
-        return ObjectUtils.isNotEmpty(objectId) ? objectId.toString() : null;
-    }
+    @IterableMapping(qualifiedByName = "toUserEntity")
+    public abstract List<UserEntity> toUserEntities(List<User> source);
 }
