@@ -23,4 +23,5 @@ public abstract class BookOrdersMapper {
 
     @IterableMapping(qualifiedByName = "toBookEntity")
     public abstract List<BookOrdersEntity> toBookEntities(List<BookOrdersModel> source);
+
 }

@@ -31,6 +31,12 @@ public class BookOrdersEntity extends ReactivePanacheMongoEntityBase {
 
     public static Uni<BookOrdersEntity> persistOrUpdateBookOrdersEntity(BookOrdersEntity entity)
     {
-        return persistOrUpdate(entity).replaceWith(entity).log("BOOK_ORDER_ENITITY_PERSISTED");
+        return persistOrUpdate(entity).replaceWith(entity).log("BOOK_ORDER_ENTITY_PERSISTED");
+    }
+
+    public static Uni<BookOrdersEntity> deleteBookOrdersEntity(ObjectId id)
+    {
+        Uni<BookOrdersEntity> bookOrder = findById(id);
+        return bookOrder.call(b -> deleteById(id)).log("BOOK_ORDER_ENTITY_PERSISTED");
     }
 }
