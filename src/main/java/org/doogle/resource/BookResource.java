@@ -6,9 +6,12 @@ import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.model.BulkWriteOptions;
 import com.mongodb.client.model.InsertOneModel;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.quarkus.logging.Log;
 import io.quarkus.mongodb.reactive.ReactiveMongoClient;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
+import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -22,14 +25,17 @@ import org.eclipse.microprofile.graphql.Mutation;
 import org.eclipse.microprofile.graphql.Query;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Path("/bookOrders")
 @GraphQLApi
+@ApplicationScoped
 public class BookResource {
 
     @ConfigProperty(name = "quarkus.mongodb.database")
@@ -93,25 +99,49 @@ public class BookResource {
     }
 
     @Mutation
-    public Uni<Map<String, String>> bulkInsert(List<BookOrdersModel> bookOrdersModels) throws ExecutionException, InterruptedException {
+    public Uni<List<ResultMap>> bulkInsert(List<BookOrdersModel> bookOrdersModels) {
         List<BookOrdersEntity> boe = bookOrdersMapper.toBookEntities(bookOrdersModels);
         List<Map<String, ?>> boelist = mapper.convertValue(boe, new TypeReference<List<Map<String, ?>>>() {
         });
-        boelist.forEach(b -> b.values().removeIf(Objects::isNull));
+        boelist.forEach(m -> m.values().removeIf(Objects::isNull));
         List<InsertOneModel<Document>> insertOneModels = boelist.stream().map(d -> new Document(d)).map(doc -> new InsertOneModel<>(doc)).toList();
-        BulkWriteResult r = getCollection().bulkWrite(insertOneModels, new BulkWriteOptions().ordered(true)).log()
-                .subscribe().asCompletionStage().get();
-        Map<String, String> res = new HashMap<>();
-        res.put("wasAcknowledged", String.valueOf(r.wasAcknowledged()));
-        res.put("insertedCount", String.valueOf(r.getInsertedCount()));
-        res.put("matchededCount", String.valueOf(r.getMatchedCount()));
-        res.put("deletededCount", String.valueOf(r.getDeletedCount()));
-        res.put("modifiededCount", String.valueOf(r.getModifiedCount()));
-
-        return Uni.createFrom().item(res);
+        List<InsertOneModel<Document>> insertOneModels2 = boelist.stream().map(d -> new Document(d)).map(doc -> new InsertOneModel<>(doc)).toList();
+        Uni<BulkWriteResult> result = getCollection().bulkWrite(insertOneModels, new BulkWriteOptions().ordered(true));
+        Uni<List<ResultMap>> res = result.map(r -> List.of(new ResultMap("wasAcknowledged", String.valueOf(r.wasAcknowledged())), new ResultMap("insertedCount", String.valueOf(r.getInsertedCount())), new ResultMap("matchededCount", String.valueOf(r.getMatchedCount())), new ResultMap("deletededCount", String.valueOf(r.getDeletedCount())), new ResultMap("modifiededCount", String.valueOf(r.getModifiedCount()))));
+        result = getCollection().bulkWrite(insertOneModels2, new BulkWriteOptions().ordered(false));
+        Uni<List<ResultMap>> res1 = result.map(r -> List.of(new ResultMap("wasAcknowledged", String.valueOf(r.wasAcknowledged())), new ResultMap("insertedCount", String.valueOf(r.getInsertedCount())), new ResultMap("matchededCount", String.valueOf(r.getMatchedCount())), new ResultMap("deletededCount", String.valueOf(r.getDeletedCount())), new ResultMap("modifiededCount", String.valueOf(r.getModifiedCount()))));
+        return Uni.combine().all().unis(res, res1).asTuple().map(tup -> Stream.of(tup.getItem1(), tup.getItem2())
+                .flatMap(Collection::stream).collect(Collectors.toList()));
     }
 
-    public ReactiveMongoCollection<Document> getCollection() {
+    @Mutation
+    @Blocking
+    public List<ResultMap> bulkInsertBlocking(List<BookOrdersModel> bookOrdersModels) throws ExecutionException, InterruptedException {
+        List<BookOrdersEntity> boe = bookOrdersMapper.toBookEntities(bookOrdersModels);
+        List<Map<String, ?>> boelist = mapper.convertValue(boe, new TypeReference<List<Map<String, ?>>>() {
+        });
+        boelist.forEach(m -> m.values().removeIf(Objects::isNull));
+        List<InsertOneModel<Document>> insertOneModels = boelist.stream().map(d -> new Document(d)).map(doc -> new InsertOneModel<>(doc)).toList();
+        List<InsertOneModel<Document>> insertOneModels2 = boelist.stream().map(d -> new Document(d)).map(doc -> new InsertOneModel<>(doc)).toList();
+        BulkWriteResult r = getCollection().bulkWrite(insertOneModels, new BulkWriteOptions().ordered(true)).subscribe().asCompletionStage().get();
+        Log.info(r);
+        List<ResultMap> res = List.of(new ResultMap("wasAcknowledged", String.valueOf(r.wasAcknowledged())),
+                new ResultMap("insertedCount", String.valueOf(r.getInsertedCount())),
+                new ResultMap("matchededCount", String.valueOf(r.getMatchedCount())),
+                new ResultMap("deletededCount", String.valueOf(r.getDeletedCount())),
+                new ResultMap("modifiededCount", String.valueOf(r.getModifiedCount())));
+        BulkWriteResult result1 = getCollection().bulkWrite(insertOneModels2, new BulkWriteOptions().ordered(false)).subscribe().asCompletionStage().get();
+        Log.info(result1);
+        List<ResultMap> res1 = List.of(new ResultMap("wasAcknowledged", String.valueOf(result1.wasAcknowledged())),
+                new ResultMap("insertedCount", String.valueOf(result1.getInsertedCount())),
+                new ResultMap("matchededCount", String.valueOf(result1.getMatchedCount())),
+                new ResultMap("deletededCount", String.valueOf(result1.getDeletedCount())),
+                new ResultMap("modifiededCount", String.valueOf(result1.getModifiedCount())));
+        return Stream.of(res1, res)
+                .flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    private ReactiveMongoCollection<Document> getCollection() {
         return mongoClient.getDatabase(defaultDatabase).getCollection("bulkCollection");
     }
 }
