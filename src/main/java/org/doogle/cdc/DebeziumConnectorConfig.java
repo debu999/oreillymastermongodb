@@ -20,7 +20,7 @@ import java.util.List;
  * heartbeat.interval.ms default 0 disabled by default
  * skipped.operations default t // c - create/insert, u update/replace, d delete, t truncate, none to not skip any operations
  */
-@ApplicationScoped
+
 public class DebeziumConnectorConfig {
     @ConfigProperty(name = "quarkus.mongodb.database")
     String mongodbName;
