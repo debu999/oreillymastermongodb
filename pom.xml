@@ -23,6 +23,7 @@
     <surefire-plugin.version>3.1.0</surefire-plugin.version>
     <jacoco.version>0.8.10</jacoco.version>
     <maven.home>/opt/apache-maven-3.9.2</maven.home> <!-- This is picked from ENV VAR MAVEN_HOME no need to explicitly add. Its a intellij Bug. -->
+    <debezium.version>2.3.0.Beta1</debezium.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -30,6 +31,13 @@
         <groupId>${quarkus.platform.group-id}</groupId>
         <artifactId>${quarkus.platform.artifact-id}</artifactId>
         <version>${quarkus.platform.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.debezium</groupId>
+        <artifactId>debezium-bom</artifactId>
+        <version>${debezium.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -114,16 +122,17 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
     </dependency>
+
+    <!-- Debezium Libraries -->
     <dependency>
       <groupId>io.debezium</groupId>
       <artifactId>debezium-embedded</artifactId>
-      <version>2.3.0.Beta1</version>
+      <version>${debezium.version}</version>
     </dependency>
-
     <dependency>
       <groupId>io.debezium</groupId>
       <artifactId>debezium-connector-mongodb</artifactId>
-      <version>2.3.0.Beta1</version>
+      <version>${debezium.version}</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -144,6 +153,7 @@
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
+      <version>5.3.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
