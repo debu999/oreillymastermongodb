@@ -39,7 +39,7 @@ public class DebeziumService {
   }
 
   public void logEvents(Map<String, Optional<String>> eventRecord) {
-    Log.info(eventRecord);
+    Log.infov("Event Received: {0}", eventRecord);
   }
 
   public JsonDeserializer getJsonDeserializer() {

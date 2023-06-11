@@ -2,7 +2,6 @@ package org.doogle.cdc;
 
 import static io.debezium.data.Envelope.FieldName.OPERATION;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.debezium.config.Configuration;
 import io.debezium.data.Envelope.Operation;
@@ -77,35 +76,10 @@ public class DebeziumListener {
       Map<String, Optional<String>> sourceRecordChangeValueMap = service.convertToEventMap(
           sourceRecordChangeValue);
       String result = mapper.writeValueAsString(sourceRecordChangeValueMap);
-
+      Log.infov(" payload {0}  topic: {1}", result, sourceRecord.topic());
       service.logEvents(sourceRecordChangeValueMap);
     }
   }
-//
-//  private List<Map<String, Object>> structToMap(Struct struct) {
-//    List<Map<String, Object>> result =
-//        struct.schema().fields().stream()
-//            .map(this::fieldToMap).toList();
-//    return result;
-//  }
-//
-//  private Map<String, Object> fieldToMap(Field field) {
-//    Map<String, Object> map =
-//        field.schema().fields().stream()
-//            .map(f -> {
-//              Map<String, Object> mapper = f.schema().fields().stream()
-//                  .filter(fl -> fl.schema().type().isPrimitive())
-//                  .collect(toMap(Field::name, field -> field));
-//              flds.stream().filter(fl -> fl.schema().type().isPrimitive())
-//              return Pair.of(fieldName.name(), struct.get(fieldName.name()))
-//            })
-//            .collect(toMap(Pair::getKey, Pair::getValue));
-//    if (map.containsKey(FilterJsonFieldEnum.ts_ms.name())) {
-//      map.put("changeTime", map.get(FilterJsonFieldEnum.ts_ms.name()));
-//      map.remove(FilterJsonFieldEnum.ts_ms.name());
-//    }
-//    return map;
-//  }
 
   void onStop(@Observes ShutdownEvent event) throws IOException {
     if (this.engine != null) {
