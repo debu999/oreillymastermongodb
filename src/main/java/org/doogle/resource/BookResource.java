@@ -120,7 +120,7 @@ public class BookResource {
   public Uni<List<ResultMap>> bulkInsert(List<BookOrdersModel> bookOrdersModels) {
     List<BookOrdersEntity> boe = bookOrdersMapper.toBookEntities(bookOrdersModels);
     List<Map<String, ?>> boelist = mapper.convertValue(boe,
-        new TypeReference<List<Map<String, ?>>>() {
+        new TypeReference<>() {
         });
     boelist.forEach(m -> m.values().removeIf(Objects::isNull));
     List<InsertOneModel<Document>> insertOneModels = boelist.stream().map(Document::new).map(
