@@ -3,23 +3,16 @@ package org.doogle.resource;
 import static com.mongodb.client.model.Updates.inc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.ReadConcern;
-import com.mongodb.ReadPreference;
-import com.mongodb.TransactionOptions;
-import com.mongodb.WriteConcern;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.reactivestreams.client.ClientSession;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.quarkus.logging.Log;
 import io.quarkus.mongodb.reactive.ReactiveMongoClient;
-import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple2;
-import io.smallrye.mutiny.unchecked.Unchecked;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import java.time.Duration;
 import java.util.List;
 import mutiny.zero.flow.adapters.AdaptersToFlow;
@@ -133,7 +126,7 @@ public class AccountResource {
           return Uni.combine().all().unis(sourceAccount, targetAccount).asTuple().log("ACCOUNTS")
               .invoke(this::checkTransaction).map(t -> List.of(t.getItem1(), t.getItem2()))
               .map(acc -> accountMapper.fromAccountEntities(acc))
-              .call(v->commitTransaction(s)).onFailure().call(
+              .call(v -> commitTransaction(s)).onFailure().call(
                   error -> abortTransaction(s).onFailure().retry()
                       .withBackOff(Duration.ofSeconds(2), Duration.ofSeconds(5)).atMost(5)
                       .eventually(s::close));
