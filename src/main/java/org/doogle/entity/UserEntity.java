@@ -3,6 +3,7 @@ package org.doogle.entity;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoEntity;
 import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoEntityBase;
+import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.smallrye.mutiny.Uni;
 import lombok.*;
 import org.bson.types.ObjectId;
@@ -28,5 +29,10 @@ public class UserEntity extends ReactivePanacheMongoEntityBase {
     public static Uni<UserEntity> persistOrUpdateUser(UserEntity user)
     {
         return persistOrUpdate(user).replaceWith(user).log("USERENTITYPERSIST");
+    }
+
+    public static ReactiveMongoCollection<UserEntity> getCollection()
+    {
+        return mongoCollection();
     }
 }

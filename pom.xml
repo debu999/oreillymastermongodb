@@ -24,6 +24,7 @@
     <jacoco.version>0.8.10</jacoco.version>
     <maven.home>/opt/apache-maven-3.9.2</maven.home> <!-- This is picked from ENV VAR MAVEN_HOME no need to explicitly add. Its a intellij Bug. -->
     <debezium.version>2.3.0.Beta1</debezium.version>
+    <mutiny.version>2.2.0</mutiny.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -47,6 +48,16 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.smallrye.reactive</groupId>
+      <artifactId>mutiny-reactor</artifactId>
+      <version>${mutiny.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.smallrye.reactive</groupId>
+      <artifactId>mutiny-zero-flow-adapters</artifactId>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -161,6 +172,12 @@
       <artifactId>commons-collections4</artifactId>
       <version>4.4</version>
     </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-narayana-jta</artifactId>
+    </dependency>
+
   </dependencies>
   <build>
     <plugins>

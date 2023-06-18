@@ -1,5 +1,7 @@
 package org.doogle.resource;
 
+import static org.doogle.enums.DBEnum.BOOK_ORDERS;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.bulk.BulkWriteResult;
@@ -29,9 +31,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.bson.Document;
 import org.doogle.entity.BookOrdersEntity;
+import org.doogle.enums.DBEnum;
 import org.doogle.mappers.BookOrdersMapper;
 import org.doogle.model.BookOrdersModel;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.graphql.Description;
 import org.eclipse.microprofile.graphql.GraphQLApi;
 import org.eclipse.microprofile.graphql.Mutation;
 import org.eclipse.microprofile.graphql.Query;
@@ -53,6 +57,9 @@ public class BookResource {
   BookOrdersMapper bookOrdersMapper;
   @Inject
   ReactiveMongoClient mongoClient;
+  private String bulkCollection;
+
+  public static Map<DBEnum, Class<?>> COLLECTION_MAP = Map.of(BOOK_ORDERS, BookOrdersEntity.class);
 
   private static List<ResultMap> getResultMaps(BulkWriteResult r) {
     return List.of(new ResultMap("wasAcknowledged", String.valueOf(r.wasAcknowledged())),
@@ -163,6 +170,17 @@ public class BookResource {
   }
 
   private ReactiveMongoCollection<Document> getCollection() {
-    return mongoClient.getDatabase(defaultDatabase).getCollection("bulkCollection");
+    return mongoClient.getDatabase(defaultDatabase).getCollection(
+        bulkCollection);
   }
+
+  /* *
+     * Not supported in free M0 version but supported in others
+   */
+  @Mutation
+  @Description(value = "Compact collection Not supported in free M0 version but supported in others")
+  public Uni<String> bookOrdersCompact( boolean force, String comments) {
+    return BookOrdersEntity.compact(force, comments);
+  }
+
 }

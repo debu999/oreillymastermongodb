@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookOrdersModel {
+public class AccountModel {
 
   public String id;
-  public String name;
-  public int isbn;
-  public double price;
+  public String accountIdentifier;
+  public String accountName;
+  public double accountBalance;
 }
 

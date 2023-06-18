@@ -39,7 +39,10 @@ public class DebeziumService {
   }
 
   public void logEvents(Map<String, Optional<String>> eventRecord) {
-    Log.infov("Event Received: {0}", eventRecord);
+    Log.info("Event Details");
+    eventRecord.forEach(
+        (k,v)-> Log.infov("key: {0} value: {1}", k,v)
+    );
   }
 
   public JsonDeserializer getJsonDeserializer() {
