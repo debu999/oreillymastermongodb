@@ -1,0 +1,44 @@
+mutation ticketcreate {
+    createUpdateTicket(
+        ticket: {id: "648dcf1fee8ccc5d23d960b3", event: "World tour Updated 3", premium: false, price: 123489.234, currency: "INR", type: "POSTPAID"}
+    ) {
+        id
+        currency
+        event
+        premium
+        price
+        type
+        __typename
+    }
+}
+
+mutation editChangeStreamPreAndPostImages {
+    editChangeStreamPreAndPostImages(enabled: true)
+}
+
+mutation createAccountCollection {
+    createAccountCollection
+}
+
+mutation editAccountChangeStreamPreAndPostImages {
+    editAccountChangeStreamPreAndPostImages(enabled: true)
+}
+
+mutation accountcreate {
+    alex: createUpdateAccount(
+        account: {id: "648e29298d58ed66df1e5683", accountIdentifier: "1", accountName: "Alex", accountBalance: 100}
+    ) {
+        id
+        accountIdentifier
+        accountName
+        accountBalance
+    }
+    mary: createUpdateAccount(
+        account: {id: "648e29298d58ed66df1e5684", accountIdentifier: "1", accountName: "Mary", accountBalance: 50}
+    ) {
+        id
+        accountIdentifier
+        accountName
+        accountBalance
+    }
+}
