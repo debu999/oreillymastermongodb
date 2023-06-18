@@ -94,7 +94,6 @@ public class AccountResource {
   }
 
   @Mutation("accountTransfer")
-  @Blocking
   public Uni<List<AccountModel>> accountTransfer(String fromAccountIdentifier,
       String toAccountIdentifier, Double amountToTransfer) {
     Log.infov("transferring {0} Hypnotons from {1} to {2}", amountToTransfer, fromAccountIdentifier,
