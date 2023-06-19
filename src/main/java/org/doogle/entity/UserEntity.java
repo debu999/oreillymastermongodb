@@ -21,6 +21,7 @@ public class UserEntity extends ReactivePanacheMongoEntityBase {
 
     @Id
     public ObjectId id;
+    public long userIdentifier;
     public String name;
     public boolean active;
     public int age;

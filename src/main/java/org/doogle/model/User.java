@@ -10,6 +10,7 @@ import lombok.*;
 public class User {
 
     private String id;
+    public long userIdentifier;
     private String name;
     private boolean active;
     private int age;
