@@ -3,6 +3,9 @@ package org.doogle.resource;
 import static com.mongodb.client.model.Updates.inc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.ReadConcern;
+import com.mongodb.TransactionOptions;
+import com.mongodb.WriteConcern;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.reactivestreams.client.ClientSession;
@@ -94,7 +97,8 @@ public class AccountResource {
     return client.startSession()
         .flatMap(s -> {
           Log.infov("session active transaction {0}", s.hasActiveTransaction());
-          s.startTransaction();
+          s.startTransaction(TransactionOptions.builder().readConcern(ReadConcern.SNAPSHOT).writeConcern(
+              WriteConcern.MAJORITY).build());
           Log.infov("session {0}", s);
           Uni<AccountEntity> sourceAccount =
               AccountEntity.getCollection()
@@ -114,7 +118,8 @@ public class AccountResource {
                   .findOneAndUpdate(s, new Document("accountIdentifier", toAccountIdentifier),
                       inc("accountBalance", amountToTransfer),
                       new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
-                          .upsert(true)).onFailure().retry()
+                          .upsert(true))
+                  .onFailure().retry()
                   .withBackOff(Duration.ofMillis(100), Duration.ofSeconds(1)).atMost(5)
                   .log("TARGET_ACCOUNT_AFTER");
 //        AccountEntity.getCollection()

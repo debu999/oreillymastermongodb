@@ -28,7 +28,7 @@ public class UserResource {
         return userEntityUni.log().map(u -> userMapper.fromUserEntities(u)).log();
     }
 
-    @Mutation("addUser")
+    @Mutation("addUpdateUser")
     public Uni<User> addUser(@Name("user") User user) {
 
         UserEntity u = userMapper.toUserEntity(user);
