@@ -18,13 +18,13 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.1.0.Final</quarkus.platform.version>
+    <quarkus.platform.version>3.2.0.Final</quarkus.platform.version>
     <skipITs>true</skipITs>
-    <surefire-plugin.version>3.1.0</surefire-plugin.version>
+    <surefire-plugin.version>3.1.2</surefire-plugin.version>
     <jacoco.version>0.8.10</jacoco.version>
     <maven.home>/opt/apache-maven-3.9.2</maven.home> <!-- This is picked from ENV VAR MAVEN_HOME no need to explicitly add. Its a intellij Bug. -->
-    <debezium.version>2.3.0.Beta1</debezium.version>
-    <mutiny.version>2.2.0</mutiny.version>
+    <debezium.version>2.3.0.Final</debezium.version>
+    <mutiny.version>2.3.1</mutiny.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -164,7 +164,7 @@
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
-      <version>5.3.0</version>
+      <version>5.3.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
