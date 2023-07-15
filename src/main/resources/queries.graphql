@@ -117,9 +117,14 @@ query transactionSummary
         count
         _id
     }
-    to: TransactionCompletedAtCountWithOrderAndLimit(limit:10, order: -1){
+    to: TransactionCompletedAtCountWithOrderAndLimit(limit:20, order: -1){
         count
         _id
+    }
+    avgStd: TransactionAverageValueAndStdDeviationWithSortOrder(order:-1){
+        _id
+        average
+        stdDevValue
     }
 }
 

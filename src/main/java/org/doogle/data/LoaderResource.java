@@ -112,8 +112,8 @@ public class LoaderResource {
   }
 
   @Query("TransactionOriginatedFromCountWithOrderAndLimit")
-  public Uni<List<TransactionSummaryView>> getNTransactionsOriginatedFromWithCountAndLimit(long limit,
-      long order) {
+  public Uni<List<TransactionSummaryView>> getNTransactionsOriginatedFromWithCountAndLimit(
+      long limit, long order) {
     return TransactionEntity.getNTransactionsOriginatedFromWithCountAndLimit(limit, order)
         .invoke(t -> processor.onNext(t)).log().collect().asList();
   }
@@ -122,6 +122,12 @@ public class LoaderResource {
   public Uni<List<TransactionSummaryView>> getNTransactionsCompletedAtWithCountAndLimit(long limit,
       long order) {
     return TransactionEntity.getNTransactionsCompletedAtWithCountAndLimit(limit, order)
+        .invoke(t -> processor.onNext(t)).log().collect().asList();
+  }
+
+  @Query("TransactionAverageValueAndStdDeviationWithSortOrder")
+  public Uni<List<TransactionSummaryView>> getAverageValueAndStandardDeviation(long order) {
+    return TransactionEntity.getAverageValueAndStandardDeviation(order)
         .invoke(t -> processor.onNext(t)).log().collect().asList();
   }
 

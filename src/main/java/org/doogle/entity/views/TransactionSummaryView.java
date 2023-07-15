@@ -8,5 +8,8 @@ public class TransactionSummaryView {
 
   public String _id;
   public long count;
+  public double average;
+  public double stdDevValue;
+
 
 }

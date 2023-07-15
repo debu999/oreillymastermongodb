@@ -36,17 +36,27 @@ public class TransactionEntity extends ReactivePanacheMongoEntityBase {
   public ZonedDateTime timestamp;
   public List<String> tags;
 
-  public static Multi<TransactionSummaryView> getNTransactionsOriginatedFromWithCountAndLimit(long n, long sortOrder) {
+  public static Multi<TransactionSummaryView> getNTransactionsOriginatedFromWithCountAndLimit(
+      long n, long sortOrder) {
     List<Document> aggregationPipeline = Arrays.asList(new Document("$group",
             new Document("_id", "$from").append("count", new Document("$sum", 1L))),
         new Document("$sort", new Document("count", sortOrder)), new Document("$limit", n));
     return mongoCollection().aggregate(aggregationPipeline, TransactionSummaryView.class);
   }
 
-  public static Multi<TransactionSummaryView> getNTransactionsCompletedAtWithCountAndLimit(long n, long sortOrder) {
+  public static Multi<TransactionSummaryView> getNTransactionsCompletedAtWithCountAndLimit(long n,
+      long sortOrder) {
     List<Document> aggregationPipeline = Arrays.asList(new Document("$group",
             new Document("_id", "$to").append("count", new Document("$sum", 1L))),
         new Document("$sort", new Document("count", sortOrder)), new Document("$limit", n));
+    return mongoCollection().aggregate(aggregationPipeline, TransactionSummaryView.class);
+  }
+
+  public static Multi<TransactionSummaryView> getAverageValueAndStandardDeviation(long sortOrder) {
+    List<Document> aggregationPipeline = Arrays.asList(new Document("$group",
+            new Document("_id", "value").append("average", new Document("$avg", "$value"))
+                .append("stdDevValue", new Document("$stdDevPop", "$value"))),
+        new Document("$sort", new Document("average", sortOrder)));
     return mongoCollection().aggregate(aggregationPipeline, TransactionSummaryView.class);
   }
 
