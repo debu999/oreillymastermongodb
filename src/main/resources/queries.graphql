@@ -42,3 +42,88 @@ mutation accountcreate {
         accountBalance
     }
 }
+
+mutation acctrx
+{
+    a1: accountTransfer(fromAccountIdentifier:"1" toAccountIdentifier: "2" amountToTransfer: 1)
+    {
+        accountBalance
+        accountIdentifier
+        accountName
+        id
+    }
+    a2: accountTransfer(fromAccountIdentifier:"1" toAccountIdentifier: "2" amountToTransfer: 1)
+    {
+        accountBalance
+        accountIdentifier
+        accountName
+        id
+    }
+    a3:accountTransfer(fromAccountIdentifier:"1" toAccountIdentifier: "2" amountToTransfer: 1)
+    {
+        accountBalance
+        accountIdentifier
+        accountName
+        id
+    }
+    a4: accountTransfer(fromAccountIdentifier:"1" toAccountIdentifier: "2" amountToTransfer: 1)
+    {
+        accountBalance
+        accountIdentifier
+        accountName
+        id
+    }
+    a5:accountTransfer(fromAccountIdentifier:"1" toAccountIdentifier: "2" amountToTransfer: 1)
+    {
+        accountBalance
+        accountIdentifier
+        accountName
+        id
+    }
+}
+
+query loadethtrx
+{
+    LoadEthereumTransactions {
+        id
+        from
+        to
+        txHash
+        txfee
+        value
+        block
+        timestamp
+        tags
+
+    }
+}
+query loadethblk
+{
+    LoadEthereumBlock {
+        id
+        height
+        transactionsNumber
+        internalTransactionsNumber
+        difficulty
+        hash
+        gasUsed
+        timestamp
+    }
+}
+
+query transactionSummary
+{
+    TransactionCountWithOrderAndLimit(limit:10, order: -1){
+        count
+        _id
+    }
+}
+
+subscription tsv
+{
+    transactionSummary
+    {
+        count
+        _id
+    }
+}
