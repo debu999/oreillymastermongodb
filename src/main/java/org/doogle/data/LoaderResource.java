@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.doogle.entity.BlockEntity;
 import org.doogle.entity.TransactionEntity;
+import org.doogle.entity.views.ActiveTransactionSummaryView;
 import org.doogle.entity.views.TransactionSummaryView;
 import org.doogle.mapper.GenericMapper;
 import org.eclipse.microprofile.graphql.GraphQLApi;
@@ -129,6 +130,12 @@ public class LoaderResource {
   public Uni<List<TransactionSummaryView>> getAverageValueAndStandardDeviation(long order) {
     return TransactionEntity.getAverageValueAndStandardDeviation(order)
         .invoke(t -> processor.onNext(t)).log().collect().asList();
+  }
+
+  @Query("TransactionActiveSummaryWithSortOrder")
+  public Uni<List<ActiveTransactionSummaryView>> getActiveHoursSummary(long order) {
+    return TransactionEntity.getActiveHoursSummary(order)
+        .log().collect().asList();
   }
 
   @Subscription

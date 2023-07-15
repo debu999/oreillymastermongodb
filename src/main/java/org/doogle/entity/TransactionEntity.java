@@ -15,6 +15,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.doogle.entity.views.ActiveTransactionSummaryView;
 import org.doogle.entity.views.TransactionSummaryView;
 
 @EqualsAndHashCode(callSuper = false)
@@ -60,6 +61,15 @@ public class TransactionEntity extends ReactivePanacheMongoEntityBase {
                         .append("stdDevTrxFee", new Document("$stdDevPop", "$txfee"))),
         new Document("$sort", new Document("average", sortOrder)));
     return mongoCollection().aggregate(aggregationPipeline, TransactionSummaryView.class);
+  }
+
+  public static Multi<ActiveTransactionSummaryView> getActiveHoursSummary(long sortOrder) {
+    List<Document> aggregationPipeline = Arrays.asList(new Document("$group",
+            new Document("_id", new Document("$hour", "$timestamp")).append("count", new Document("$sum", 1L))
+                .append("transactionValues", new Document("$sum", "$value"))
+        ),
+        new Document("$sort", new Document("count", sortOrder)));
+    return mongoCollection().aggregate(aggregationPipeline, ActiveTransactionSummaryView.class);
   }
 
 }
