@@ -111,10 +111,17 @@ public class LoaderResource {
     return jn;
   }
 
-  @Query("TransactionCountWithOrderAndLimit")
-  public Uni<List<TransactionSummaryView>> getNTransactionsByCountWithOrder(long limit,
+  @Query("TransactionOriginatedFromCountWithOrderAndLimit")
+  public Uni<List<TransactionSummaryView>> getNTransactionsOriginatedFromWithCountAndLimit(long limit,
       long order) {
-    return TransactionEntity.getNTransactionsByCountWithOrder(limit, order)
+    return TransactionEntity.getNTransactionsOriginatedFromWithCountAndLimit(limit, order)
+        .invoke(t -> processor.onNext(t)).log().collect().asList();
+  }
+
+  @Query("TransactionCompletedAtCountWithOrderAndLimit")
+  public Uni<List<TransactionSummaryView>> getNTransactionsCompletedAtWithCountAndLimit(long limit,
+      long order) {
+    return TransactionEntity.getNTransactionsCompletedAtWithCountAndLimit(limit, order)
         .invoke(t -> processor.onNext(t)).log().collect().asList();
   }
 

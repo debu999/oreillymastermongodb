@@ -113,7 +113,11 @@ query loadethblk
 
 query transactionSummary
 {
-    TransactionCountWithOrderAndLimit(limit:10, order: -1){
+    from: TransactionOriginatedFromCountWithOrderAndLimit(limit:10, order: -1){
+        count
+        _id
+    }
+    to: TransactionCompletedAtCountWithOrderAndLimit(limit:10, order: -1){
         count
         _id
     }
