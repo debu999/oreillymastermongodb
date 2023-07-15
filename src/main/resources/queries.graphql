@@ -125,6 +125,8 @@ query transactionSummary
         _id
         average
         stdDevValue
+        avgTrxFee
+        stdDevTrxFee
     }
 }
 

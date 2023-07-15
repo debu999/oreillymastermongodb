@@ -54,8 +54,10 @@ public class TransactionEntity extends ReactivePanacheMongoEntityBase {
 
   public static Multi<TransactionSummaryView> getAverageValueAndStandardDeviation(long sortOrder) {
     List<Document> aggregationPipeline = Arrays.asList(new Document("$group",
-            new Document("_id", "value").append("average", new Document("$avg", "$value"))
-                .append("stdDevValue", new Document("$stdDevPop", "$value"))),
+            new Document("_id", "value").append("averageValue", new Document("$avg", "$value"))
+                .append("stdDevValue", new Document("$stdDevPop", "$value"))
+                    .append("avgTrxFee", new Document("$avg", "$txfee"))
+                        .append("stdDevTrxFee", new Document("$stdDevPop", "$txfee"))),
         new Document("$sort", new Document("average", sortOrder)));
     return mongoCollection().aggregate(aggregationPipeline, TransactionSummaryView.class);
   }
