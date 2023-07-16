@@ -5,9 +5,11 @@ import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoEntityBase;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.quarkus.mongodb.reactive.ReactiveMongoDatabase;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.Id;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +18,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.doogle.entity.views.BlockSummaryView;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
@@ -36,19 +39,6 @@ public class BlockEntity extends ReactivePanacheMongoEntityBase {
   public ZonedDateTime timestamp;
 
 
-  public static Uni<List<BlockEntity>> getAll() {
-    return listAll();
-  }
-
-  public static Uni<BlockEntity> persistOrUpdateAccountEntity(BlockEntity entity) {
-    return persistOrUpdate(entity).replaceWith(entity).log("ACCOUNT_ENTITY_PERSISTED");
-  }
-
-  public static Uni<BlockEntity> deleteAccountEntity(ObjectId id) {
-    Uni<BlockEntity> account = findById(id);
-    return account.call(b -> deleteById(id)).log("ACCOUNT_ENTITY_DELETED");
-  }
-
   public static ReactiveMongoCollection<BlockEntity> getCollection() {
     return mongoCollection();
   }
@@ -64,15 +54,22 @@ public class BlockEntity extends ReactivePanacheMongoEntityBase {
     return getDatabase().runCommand(changeStreamPreAndPostImagesCommand).map(Document::toJson);
   }
 
-  public static Uni<String> createCollection() {
-    String collectionName = getCollection().getNamespace().getCollectionName();
-    return getDatabase().createCollection(collectionName)
-        .map(v -> String.join("", "Collection '", collectionName, "' created successfully."));
-  }
+  public static Multi<BlockSummaryView> getAverageTransactionPerBlock(long sortOrder) {
+    List<Document> aggregationPipeline = Arrays.asList(new Document("$group",
+            new Document("_id", "avg_trx_per_block").append("count",
+                new Document("$avg", "$transactionsNumber"))
+                .append("avgIntTrx",
+                    new Document("$avg", "$internalTransactionsNumber"))
+                .append("avgGasUsed",
+                    new Document("$avg", "$gasUsed"))
+                .append("avgDifficulty",
+                    new Document("$avg", "$difficulty"))
+                .append("stdDevDifficulty",
+                    new Document("$stdDevPop", "$difficulty"))
 
-  public static Uni<BlockEntity> findByAccountIdentifier(String accountIdentifier) {
-    Uni<BlockEntity> account = find("accountIdentifier", accountIdentifier).firstResult();
-    return account.log("ACCOUNT_BY_IDENTIFIER");
+        ),
+        new Document("$sort", new Document("count", sortOrder)));
+    return mongoCollection().aggregate(aggregationPipeline, BlockSummaryView.class);
   }
 
 }

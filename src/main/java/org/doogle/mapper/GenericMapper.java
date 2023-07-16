@@ -21,6 +21,7 @@ import org.doogle.entity.embedded.Group;
 
 public class GenericMapper {
 
+  // initial coin offering = ico
   public static List<String> tags = List.of("scam", "ico");
   public static SecureRandom random = new SecureRandom();
 

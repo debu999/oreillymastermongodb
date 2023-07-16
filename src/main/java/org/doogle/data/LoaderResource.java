@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.smallrye.common.annotation.Blocking;
 import io.smallrye.graphql.api.Subscription;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -31,9 +32,12 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import org.doogle.entity.BlockEntity;
 import org.doogle.entity.TransactionEntity;
 import org.doogle.entity.views.ActiveTransactionSummaryView;
+import org.doogle.entity.views.BlockSummaryView;
+import org.doogle.entity.views.SpammerView;
 import org.doogle.entity.views.TransactionSummaryView;
 import org.doogle.mapper.GenericMapper;
 import org.eclipse.microprofile.graphql.GraphQLApi;
@@ -132,10 +136,25 @@ public class LoaderResource {
         .invoke(t -> processor.onNext(t)).log().collect().asList();
   }
 
-  @Query("TransactionActiveSummaryWithSortOrder")
+  @Query("TransactionActiveHourSummaryWithSortOrder")
   public Uni<List<ActiveTransactionSummaryView>> getActiveHoursSummary(long order) {
-    return TransactionEntity.getActiveHoursSummary(order)
-        .log().collect().asList();
+    return TransactionEntity.getActiveHoursSummary(order).log().collect().asList();
+  }
+
+  @Query("TransactionActiveDaySummaryWithSortOrder")
+  public Uni<List<ActiveTransactionSummaryView>> getActiveDaySummary(long order) {
+    return TransactionEntity.getActiveDaySummary(order).log().collect().asList();
+  }
+
+  @Query("BlockAverageTransactions")
+  public Uni<List<BlockSummaryView>> getAverageTransactionPerBlock(long order) {
+    return BlockEntity.getAverageTransactionPerBlock(order).log().collect().asList();
+  }
+
+  @Query("SpammerView")
+  public Uni<List<SpammerView>> getSpammers(ZonedDateTime start, ZonedDateTime end)
+      throws ExecutionException, InterruptedException {
+    return TransactionEntity.getSpammers(start, end).collect().asList().log("spammer");
   }
 
   @Subscription
